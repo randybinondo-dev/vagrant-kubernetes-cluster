@@ -3,7 +3,7 @@
 cluster_name: Kubernetes Cluster
 network:
   # Worker IPs are simply incremented from the control IP.
-  control_ip: 10.0.0.10
+  control_ip: 192.168.56.100
   dns_servers:
     - 8.8.8.8
     - 1.1.1.1
@@ -14,12 +14,14 @@ nodes:
     cpu: 2
     memory: 4096
   workers:
-    count: 2
+    count: 1
     cpu: 2
     memory: 4096
 
 software:
-  box: bento/ubuntu-22.04
+  box: vagrant-ubuntu2404-k8s
   calico: 3.25.0
-  kubernetes: 1.26.1-00
-  os: xUbuntu_22.04
+  kubernetes: 1.30.5-1.1
+  os: Ubuntu_24.04
+
+#alvistack/ubuntu-24.04

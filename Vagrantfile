@@ -23,7 +23,7 @@ Vagrant.configure("2") do |config|
   else
     config.vm.box = settings["software"]["box"]
   end
-  config.vm.box_check_update = true
+  config.vm.box_check_update = false
 
   config.vm.define "master" do |master|
     master.vm.hostname = "master-node"
@@ -48,43 +48,43 @@ Vagrant.configure("2") do |config|
         "OS" => settings["software"]["os"]
       },
       path: "scripts/common.sh"
-    master.vm.provision "shell",
-      env: {
-        "CALICO_VERSION" => settings["software"]["calico"],
-        "CONTROL_IP" => settings["network"]["control_ip"],
-        "POD_CIDR" => settings["network"]["pod_cidr"],
-        "SERVICE_CIDR" => settings["network"]["service_cidr"]
-      },
-      path: "scripts/master.sh"
+    # master.vm.provision "shell",
+    #   env: {
+    #     "CALICO_VERSION" => settings["software"]["calico"],
+    #     "CONTROL_IP" => settings["network"]["control_ip"],
+    #     "POD_CIDR" => settings["network"]["pod_cidr"],
+    #     "SERVICE_CIDR" => settings["network"]["service_cidr"]
+    #   },
+    #   path: "scripts/master.sh"
   end
 
-  (1..NUM_WORKER_NODES).each do |i|
+  # (1..NUM_WORKER_NODES).each do |i|
 
-    config.vm.define "node0#{i}" do |node|
-      node.vm.hostname = "worker-node0#{i}"
-      node.vm.network "private_network", ip: IP_NW + "#{IP_START + i}"
-      if settings["shared_folders"]
-        settings["shared_folders"].each do |shared_folder|
-          node.vm.synced_folder shared_folder["host_path"], shared_folder["vm_path"]
-        end
-      end
-      node.vm.provider "virtualbox" do |vb|
-          vb.cpus = settings["nodes"]["workers"]["cpu"]
-          vb.memory = settings["nodes"]["workers"]["memory"]
-          if settings["cluster_name"] and settings["cluster_name"] != ""
-            vb.customize ["modifyvm", :id, "--groups", ("/" + settings["cluster_name"])]
-          end
-      end
-      node.vm.provision "shell",
-        env: {
-          "DNS_SERVERS" => settings["network"]["dns_servers"].join(" "),
-          "ENVIRONMENT" => settings["environment"],
-          "KUBERNETES_VERSION" => settings["software"]["kubernetes"],
-          "OS" => settings["software"]["os"]
-        },
-        path: "scripts/common.sh"
-      node.vm.provision "shell", path: "scripts/node.sh"
-    end
+  #   config.vm.define "node0#{i}" do |node|
+  #     node.vm.hostname = "worker-node0#{i}"
+  #     node.vm.network "private_network", ip: IP_NW + "#{IP_START + i}"
+  #     if settings["shared_folders"]
+  #       settings["shared_folders"].each do |shared_folder|
+  #         node.vm.synced_folder shared_folder["host_path"], shared_folder["vm_path"]
+  #       end
+  #     end
+  #     node.vm.provider "virtualbox" do |vb|
+  #         vb.cpus = settings["nodes"]["workers"]["cpu"]
+  #         vb.memory = settings["nodes"]["workers"]["memory"]
+  #         if settings["cluster_name"] and settings["cluster_name"] != ""
+  #           vb.customize ["modifyvm", :id, "--groups", ("/" + settings["cluster_name"])]
+  #         end
+  #     end
+  #     node.vm.provision "shell",
+  #       env: {
+  #         "DNS_SERVERS" => settings["network"]["dns_servers"].join(" "),
+  #         "ENVIRONMENT" => settings["environment"],
+  #         "KUBERNETES_VERSION" => settings["software"]["kubernetes"],
+  #         "OS" => settings["software"]["os"]
+  #       },
+  #       path: "scripts/common.sh"
+  #     node.vm.provision "shell", path: "scripts/node.sh"
+  #   end
 
-  end
+  # end
 end 
